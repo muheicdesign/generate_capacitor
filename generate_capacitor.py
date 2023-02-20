@@ -311,7 +311,7 @@ def make_all(f_esr = 500):
                 #run generate_capacitor function:
                 generate_capacitor(col.value,vendor, SHOW_PLOT = False)
                 #close the plots after you:
-                plt.close()
+                plt.close('all')
             
 
 
@@ -345,6 +345,7 @@ if __name__ == "__main__":
 
     # part number:
     capacitor = "GRM21BC71E106KE11"
+
 
     # Frequency for f_esr extraction:
     f_esr = 500              #in kHz
