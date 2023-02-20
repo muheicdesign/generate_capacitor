@@ -4,11 +4,7 @@
 
 ![](contents/a1ccd43cac79de81f05d9219927df68219bfb572.png)
 
-
-
 This user guide is for the generate_capacitor.py script. The script is responsible for generating various verilog-A models for discrete capacitors based on measurement data provided by the manufacturers website. The script requires the user to download the measurement data, update a component database excel file and then run the script. This user guide is written to help the PhD students at Leibniz University of Hannover to get started with Python, download the generate_capacitor.py script and run the script to extract a new capacitor.
-
-
 
 ## Getting started
 
