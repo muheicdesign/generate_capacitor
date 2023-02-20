@@ -1,0 +1,58 @@
+// =====================================================================================================================
+// Murata capacitor Verilog-A model
+// This is a non linear capacitor that depends on the DC operating point.
+// Date : {{ date_time }}
+// Created by: muhe
+// =====================================================================================================================
+
+`include "constants.vams"
+`include "disciplines.vams"
+
+module c_{{ capacitor_name }} (plus,minus);
+
+    electrical plus,minus,port1,port2;
+
+    parameter real tol=0 from (-100:100);
+	parameter real cap_nom = {{ cap_nom }};
+	parameter real v_max = {{ voltage_rating }}
+
+    real cap_val = 0;
+    real cap_voltage =0;
+	real esr_val = {{ esr_val }};
+	real ind_val = {{ ind_val }};
+
+	branch (plus,port1) esr;
+	branch (port1,port2) ind;
+	branch (port2,minus) cap;
+    analog begin
+        cap_voltage = abs(V(plus,minus));
+        cap_val = cap_nom * (1 + tol / 100) * (1
+			+ {{ coeff[0] }} * pow(cap_voltage,15) 
+			+ {{ coeff[1] }} * pow(cap_voltage,14) 
+			+ {{ coeff[2] }} * pow(cap_voltage,13) 
+			+ {{ coeff[3] }} * pow(cap_voltage,12)
+			+ {{ coeff[4] }} * pow(cap_voltage,11)
+			+ {{ coeff[5] }} * pow(cap_voltage,10)
+			+ {{ coeff[6] }} * pow(cap_voltage,9)
+			+ {{ coeff[7] }} * pow(cap_voltage,8)
+			+ {{ coeff[8] }} * pow(cap_voltage,7)
+			+ {{ coeff[9] }} * pow(cap_voltage,6)
+			+ {{ coeff[10] }} * pow(cap_voltage,5)
+			+ {{ coeff[11] }} * pow(cap_voltage,4)
+			+ {{ coeff[12] }} * pow(cap_voltage,3)
+			+ {{ coeff[13] }} * pow(cap_voltage,2)
+			+ {{ coeff[14] }} * pow(cap_voltage,1)
+			+ {{ coeff[15] }} );
+			
+		
+		V(esr) <+ I(esr)* esr_val;
+		V(ind) <+ ddt(I(ind)) * ind_val;
+        I(cap) <+ cap_val * ddt(V(cap));
+
+		if(V(cap) >= v_max) begin
+			$strobe("V(plus,minus) is: %f V, which exceeds the maximum rating of: %f V", V(plus,minus),v_max);
+		end
+
+    end
+
+endmodule
