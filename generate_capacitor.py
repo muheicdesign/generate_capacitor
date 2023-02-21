@@ -150,7 +150,7 @@ def generate_capacitor(capacitor, vendor, f_esr = 500, SHOW_PLOT=True):
         print("\nESR_min is: %2.4f mOhm" %(esr_val_min*1e3))
 
         # calculate approximate L at high frequencies
-        ESL = (imp_ac[-50]-esr_val)/(2*np.pi * freq1[-50])
+        ESL = (imp_ac[-20]-esr_val**2)/(2*np.pi * freq1[-20])
 
         print("\nESL is: %2.3f nH \n" %(ESL*1e9))
 
@@ -256,7 +256,7 @@ def generate_capacitor(capacitor, vendor, f_esr = 500, SHOW_PLOT=True):
         ax.plot(freq1,imp_ac, label = "Z ($\Omega$)")
         ax.plot(freq2,res_ac, label = "ESR ($\Omega$)")
 
-        ax.plot(freq1[-50],imp_ac[-50], marker = '*', color='black')
+        ax.plot(freq1[-20],imp_ac[-20], marker = '*', color='black')
         ax.plot(freq2[idx],res_ac[idx], marker = '*', color='black')
         ax.plot(freq2[idx_min],res_ac[idx_min], marker = '*', color='black')
 
@@ -264,7 +264,7 @@ def generate_capacitor(capacitor, vendor, f_esr = 500, SHOW_PLOT=True):
         ESL_string = "ESL = %2.3f nH" %(ESL*1e9)
         ESR_min_string = "$ESR_{min} = %2.2f m\Omega$ @ %3.2f kHz" %(esr_val_min*1e3, freq2[idx_min]*1e-3)
 
-        ax.annotate(ESL_string, xy=(freq1[-50],imp_ac[-50]), xycoords='data', ha="center", va="bottom", fontsize=10)
+        ax.annotate(ESL_string, xy=(freq1[-20],imp_ac[-20]), xycoords='data', ha="center", va="bottom", fontsize=10)
         ax.annotate(ESR_string, xy=(freq2[idx],res_ac[idx]), xycoords='data', ha="center", va="bottom", fontsize=10)
         ax.annotate(ESR_min_string, xy=(freq2[idx_min],res_ac[idx_min]), xycoords='data', ha="center", va="top", fontsize=10)
 
