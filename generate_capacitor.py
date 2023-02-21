@@ -150,7 +150,7 @@ def generate_capacitor(capacitor, vendor, f_esr = 500, SHOW_PLOT=True):
         print("\nESR_min is: %2.4f mOhm" %(esr_val_min*1e3))
 
         # calculate approximate L at high frequencies
-        ESL = (imp_ac[-20]-esr_val**2)/(2*np.pi * freq1[-20])
+        ESL = np.sqrt((imp_ac[-20]**2-esr_val**2))/(2*np.pi * freq1[-20])
 
         print("\nESL is: %2.3f nH \n" %(ESL*1e9))
 
