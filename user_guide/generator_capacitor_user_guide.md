@@ -50,7 +50,7 @@ Install Anaconda on your PC with default settings.
 
 ## Open Anaconda and create new conda environment
 
-Open **Anaconda** on your computer. If it needs to update - then update immediately.
+Open **Anaconda** on your computer. If it needs to update - then **DON'T** update. There is currently a bug in the newest version. For now just press "Remind me later".
 
 After opening it the "home" tab should look something like this:
 
