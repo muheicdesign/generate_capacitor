@@ -276,7 +276,7 @@ def generate_capacitor(capacitor, vendor, f_esr = 500, SHOW_PLOT=True):
         ax.minorticks_on()
         ax.grid(visible=True, which='minor', color='#999999', linestyle='-', alpha=0.2)
 
-        ax.set_xlabel('DC Voltage [V]')
+        ax.set_xlabel('Frequency [Hz]')
         ax.set_ylabel('Impedance [$\mathrm{\Omega}$]')
         ax.legend(loc = "upper right")
         plt.tight_layout()
