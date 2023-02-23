@@ -9,6 +9,7 @@ import pathlib
 from pathlib import Path
 from datetime import datetime
 import openpyxl
+import shutil
 
 
 plt.rc('lines', lw=1.5)
@@ -79,12 +80,41 @@ def generate_capacitor(capacitor, vendor, f_esr = 500, SHOW_PLOT=True):
         except OSError as error:
             print(error)
 
+        try:
+            ## copy the contents from the symbol template to the correct location:
+            path_symbol_template = os.path.join(path_parent,r"templates",r"symbol")
+            shutil.copytree(path_symbol_template,os.path.join(path_parent,r"output",capacitor,r"symbol"))
+        except OSError as error:
+            print(error)
+
+        try:
+            path_mastertag_template = os.path.join(path_parent,r"templates",r"master.tag")
+            
+            os.mkdir(os.path.join(path_parent,r"output",capacitor,r"veriloga"))
+            shutil.copy(path_mastertag_template, os.path.join(path_parent,r"output",capacitor,r"veriloga",r"master.tag"))
+            
+            os.mkdir(os.path.join(path_parent,r"output",capacitor,r"veriloga_rc"))
+            shutil.copy(path_mastertag_template, os.path.join(path_parent,r"output",capacitor,r"veriloga_rc",r"master.tag"))
+            
+            os.mkdir(os.path.join(path_parent,r"output",capacitor,r"veriloga_rc_"+str(f_esr)+r"khz"))
+            shutil.copy(path_mastertag_template, os.path.join(path_parent,r"output",capacitor,r"veriloga_rc_"+str(f_esr)+r"khz",r"master.tag"))
+            
+            os.mkdir(os.path.join(path_parent,r"output",capacitor,r"veriloga_rlc"))
+            shutil.copy(path_mastertag_template, os.path.join(path_parent,r"output",capacitor,r"veriloga_rlc",r"master.tag"))
+            
+            os.mkdir(os.path.join(path_parent,r"output",capacitor,r"veriloga_rlc_"+str(f_esr)+r"khz"))
+            shutil.copy(path_mastertag_template, os.path.join(path_parent,r"output",capacitor,r"veriloga_rlc_"+str(f_esr)+r"khz",r"master.tag"))
+
+        except OSError as error:
+            print(error)
+
+
         ## Define all the output paths to where verilog-a files are saved:
-        output_path_veriloga = os.path.join(path_parent,r"output",capacitor,r"veriloga.va")
-        output_path_veriloga_rc = os.path.join(path_parent,r"output",capacitor,r"veriloga_rc.va")
-        output_path_veriloga_rc_500khz = os.path.join(path_parent,r"output",capacitor,r"veriloga_rc_"+str(f_esr)+r"khz.va")
-        output_path_veriloga_rlc = os.path.join(path_parent,r"output",capacitor,r"veriloga_rlc.va")
-        output_path_veriloga_rlc_500khz = os.path.join(path_parent,r"output",capacitor,r"veriloga_rlc_"+str(f_esr)+r"khz.va")
+        output_path_veriloga = os.path.join(path_parent,r"output",capacitor,r"veriloga",r"veriloga.va")
+        output_path_veriloga_rc = os.path.join(path_parent,r"output",capacitor,r"veriloga_rc",r"veriloga_rc.va")
+        output_path_veriloga_rc_500khz = os.path.join(path_parent,r"output",capacitor,r"veriloga_rc_"+str(f_esr)+r"khz",r"veriloga_rc_"+str(f_esr)+r"khz.va")
+        output_path_veriloga_rlc = os.path.join(path_parent,r"output",capacitor,r"veriloga_rlc",r"veriloga_rlc.va")
+        output_path_veriloga_rlc_500khz = os.path.join(path_parent,r"output",capacitor,r"veriloga_rlc_"+str(f_esr)+r"khz",r"veriloga_rlc_"+str(f_esr)+r"khz.va")
 
         ### load all data:
 
@@ -351,10 +381,10 @@ if __name__ == "__main__":
     f_esr = 500              #in kHz
 
     ### show plots or not (for visual inspection of polynomial fit and impedance extraction)
-    SHOW_PLOT = True
+    SHOW_PLOT = False
 
     #Run main generator function:
-    generate_capacitor(capacitor, vendor, f_esr)
+    generate_capacitor(capacitor, vendor, f_esr, SHOW_PLOT)
 
 
     ##################################################################################

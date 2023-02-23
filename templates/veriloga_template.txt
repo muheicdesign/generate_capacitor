@@ -16,7 +16,7 @@ module c_{{ capacitor_name }} (plus,minus);
 
     parameter real tol=0 from (-100:100);
 	parameter real cap_nom = {{ cap_nom }};
-	parameter real v_max = {{ voltage_rating }}
+	parameter real v_max = {{ voltage_rating }};
 
     real cap_val = 0;
     real cap_voltage =0;
