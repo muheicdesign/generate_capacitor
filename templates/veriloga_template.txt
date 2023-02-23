@@ -10,6 +10,8 @@
 
 module c_{{ capacitor_name }} (plus,minus);
 
+	inout plus,minus;
+
     electrical plus,minus;
 
     parameter real tol=0 from (-100:100);
