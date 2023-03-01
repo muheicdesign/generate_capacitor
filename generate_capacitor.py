@@ -23,7 +23,7 @@ plt.rcParams['ytick.major.pad'] = 10
 cm = 1/2.54
 
 
-def generate_capacitor(capacitor, vendor, f_esr = 500, SHOW_PLOT=True):
+def generate_capacitor(capacitor, vendor, f_esr = 500, n_order = 7, SHOW_PLOT=True):
 
 
     print("\n###############################################################")
@@ -198,8 +198,8 @@ def generate_capacitor(capacitor, vendor, f_esr = 500, SHOW_PLOT=True):
 
         ##### Polynomial fit for non-linear dc behaviour:
 
-        ### calculate 15th order polynomial fit:
-        coeff = np.polyfit(voltage,dc_deg,15)
+        ### calculate nth order polynomial fit:
+        coeff = np.polyfit(voltage,dc_deg,n_order)
         polyfit=0
 
         for i in range(len(coeff)):
@@ -321,7 +321,7 @@ def generate_capacitor(capacitor, vendor, f_esr = 500, SHOW_PLOT=True):
 
 
 
-def make_all(f_esr = 500):
+def make_all(f_esr = 500, n_order = 7):
 
     #inputs:
         #f_esr (default) = 500kHz
@@ -339,7 +339,7 @@ def make_all(f_esr = 500):
         for col in ws['A']:
             if (col.value is not None and col.value != "name"):
                 #run generate_capacitor function:
-                generate_capacitor(col.value,vendor, SHOW_PLOT = False)
+                generate_capacitor(col.value,vendor, f_esr, n_order = n_order, SHOW_PLOT = False)
                 #close the plots after you:
                 plt.close('all')
             
@@ -376,15 +376,17 @@ if __name__ == "__main__":
     # part number:
     capacitor = "GRM21BC71E106KE11"
 
+    #order of polynomial fit (7 is standard, too high reduces simulation time.)
+    n_order = 7
 
     # Frequency for f_esr extraction:
     f_esr = 500              #in kHz
 
     ### show plots or not (for visual inspection of polynomial fit and impedance extraction)
-    SHOW_PLOT = False
+    SHOW_PLOT = True
 
     #Run main generator function:
-    generate_capacitor(capacitor, vendor, f_esr, SHOW_PLOT)
+    generate_capacitor(capacitor, vendor, f_esr, n_order, SHOW_PLOT)
 
 
     ##################################################################################
@@ -395,5 +397,6 @@ if __name__ == "__main__":
     #   if errors exist in database or missing csv data, the function should
     #   report a WarningInfo and skip these.
 
-    f_esr = 500              #in kHz
-    #make_all(f_esr)
+    f_esr = 500             #in kHz
+    n_order = 7             #order of polynomial fit.
+    #make_all(f_esr, n_order)

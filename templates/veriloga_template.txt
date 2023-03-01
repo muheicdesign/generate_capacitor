@@ -8,7 +8,7 @@
 `include "constants.vams"
 `include "disciplines.vams"
 
-module c_{{ capacitor_name }} (plus,minus);
+module {{ capacitor_name }} (plus,minus);
 
 	inout plus,minus;
 
@@ -17,34 +17,54 @@ module c_{{ capacitor_name }} (plus,minus);
     parameter real tol=0 from (-100:100);
 	parameter real cap_nom = {{ cap_nom }};
 	parameter real v_max = {{ voltage_rating }};
+	parameter real v_thres = 1 from [0:100);
 
     real cap_val = 0;
     real cap_voltage =0;
+	real v_lim = v_max*v_thres/100;
+	real vcap_lower = 0;
+	real vcap_upper = v_lim;
+
+	integer x_up, x_down;
 
 	branch (plus,minus) cap;
     analog begin
-        cap_voltage = abs(V(plus,minus));
-        cap_val = cap_nom * (1 + tol / 100) * (1
-			+ {{ coeff[0] }} * pow(cap_voltage,15) 
-			+ {{ coeff[1] }} * pow(cap_voltage,14) 
-			+ {{ coeff[2] }} * pow(cap_voltage,13) 
-			+ {{ coeff[3] }} * pow(cap_voltage,12)
-			+ {{ coeff[4] }} * pow(cap_voltage,11)
-			+ {{ coeff[5] }} * pow(cap_voltage,10)
-			+ {{ coeff[6] }} * pow(cap_voltage,9)
-			+ {{ coeff[7] }} * pow(cap_voltage,8)
-			+ {{ coeff[8] }} * pow(cap_voltage,7)
-			+ {{ coeff[9] }} * pow(cap_voltage,6)
-			+ {{ coeff[10] }} * pow(cap_voltage,5)
-			+ {{ coeff[11] }} * pow(cap_voltage,4)
-			+ {{ coeff[12] }} * pow(cap_voltage,3)
-			+ {{ coeff[13] }} * pow(cap_voltage,2)
-			+ {{ coeff[14] }} * pow(cap_voltage,1)
-			+ {{ coeff[15] }} );
-			
-        I(cap) <+ cap_val * ddt(V(cap));
+		@(initial_step) begin
+			cap_val = cap_nom;
+			vcap_lower = 0;
+			vcap_upper = v_lim;
+			x_up = 0;
+			x_down = 0;
+		end
 
-		if(V(cap) >= v_max) begin
+		@(above((V(plus,minus) - (vcap_upper+0.01*v_lim)),1n)) begin
+			x_up = 1;
+			vcap_upper = min((vcap_upper + v_lim/2.0),v_max);
+			vcap_lower = min((vcap_lower + v_lim/2.0), (v_max-v_lim));
+		end
+
+		@(above((vcap_lower-0.01*v_lim) - V(plus,minus),1n)) begin
+			x_down = 1;
+			vcap_upper = max(v_lim,(vcap_upper - v_lim/2.0));
+			vcap_lower = max(0,(vcap_lower - v_lim/2.0));
+		end
+
+
+		if(x_up == 1 || x_down == 1) begin
+        	cap_voltage = abs(V(plus,minus));
+			cap_val = cap_nom * (1 + tol / 100) * (1 
+			{% for i in range(coeff|length-1) -%}
+				+ {{ coeff[i]  }} * pow(cap_voltage,{{ coeff|length - 1 - i }}) 
+			{% endfor -%}
+			+ {{ coeff[-1] }});
+
+			x_up = 0;
+			x_down = 0;
+		end
+
+        I(cap) <+ transition(cap_val,0,1n,1n,1n) * ddt(V(cap));
+
+		@(cross((V(cap) - v_max),1)) begin
 			$strobe("V(plus,minus) is: %f V, which exceeds the maximum rating of: %f V", V(plus,minus),v_max);
 		end
 
